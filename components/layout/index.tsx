@@ -1,13 +1,18 @@
 import {
+  Avatar,
   Button,
   Divider,
-  Icon,
   Input,
   InputGroup,
   InputRightElement,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react";
 import { MessageIcon, SearchIcon } from "components/icons";
 import Image from "next/image";
+import { useSession, signIn, signOut } from "next-auth/react";
 import logo from "public/images/logo.png";
 
 type Props = {
@@ -15,9 +20,11 @@ type Props = {
 };
 
 export default function Layout({ children }: Props) {
+  const { data: session, status } = useSession();
+
   return (
     <div className="flex flex-col items-center">
-      <header className="max-w-[1200px] min-w-[900px] flex items-center justify-between p-2">
+      <header className="max-w-[1200px] min-w-[900px] flex items-center justify-between p-2 gap-2">
         <Image src={logo} alt="logo" width={48} height={48} />
         <div className="flex items-center gap-4">
           <InputGroup size="md">
@@ -40,9 +47,30 @@ export default function Layout({ children }: Props) {
             管理中心
           </Button>
           <MessageIcon fontSize={"4xl"} className={"cursor-pointer"} />
-          <div className="inline-flex items-center justify-center h-8 bg-teal-500 rounded-full cursor-pointer aspect-square">
-            A
-          </div>
+          {session ? (
+            <Menu isLazy placement="bottom">
+              <MenuButton>
+                <Avatar
+                  name="A"
+                  w={12}
+                  h={12}
+                  src={session?.user?.image as string}
+                />
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={() => signOut()}>退出</MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <Button
+              bgColor={"teal"}
+              color={"white"}
+              px={8}
+              onClick={() => signIn()}
+            >
+              登录
+            </Button>
+          )}
         </div>
       </header>
       <Divider />
