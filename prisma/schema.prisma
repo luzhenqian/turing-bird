@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String    @unique @db.VarChar
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+
+  @@index([name])
+}
+
+model Collect {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @db.Uuid
+  postId    String    @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @db.Uuid
+  postId    String    @db.Uuid
+  content   String
+  parentId  String?   @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
+
+model ContentAnalysis {
+  id            Int       @id @default(autoincrement())
+  recordId      String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String    @db.Uuid
+  postId        String    @db.Uuid
+  wordCount     Int?
+  creationPoint Int?
+  showCount     Int?
+  viewCount     Int?
+  likeCount     Int?
+  commentCount  Int?
+  collectCount  Int?
+  createdAt     DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? @db.Timestamp(6)
+}
+
+model Fllow {
+  id         Int       @id @default(autoincrement())
+  recordId   String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  followerId String    @db.Uuid
+  followedId String    @db.Uuid
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime? @db.Timestamp(6)
+}
+
+model FllowAnalysis {
+  id          Int       @id @default(autoincrement())
+  recordId    String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @db.Uuid
+  activeCount Int?
+  newCount    Int?
+  cancelCount Int?
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? @db.Timestamp(6)
+}
+
+model Like {
+  id          Int       @id @default(autoincrement())
+  recordId    String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String    @db.Uuid
+  postId      String    @db.Uuid
+  isEffective Boolean
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? @db.Timestamp(6)
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String    @unique @db.VarChar
+  cover     String?   @db.VarChar
+  content   String
+  isDraft   Boolean
+  userId    String    @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+
+  @@index([title])
+}
+
+model PostCategory {
+  id         Int       @id @default(autoincrement())
+  recordId   String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId     String    @db.Uuid
+  categoryId String    @db.Uuid
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime? @db.Timestamp(6)
+}
+
+model PostTag {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String    @db.Uuid
+  tagId     String    @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
+
+model Recommend {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String    @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
+
+model Tag {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String    @unique @db.VarChar
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+
+  @@index([name])
+}
+
+model Top {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String    @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nikename  String    @unique @db.VarChar
+  profile   String?   @db.VarChar
+  email     String?   @unique @db.VarChar
+  avatar    String?   @db.VarChar
+  phone     String?   @unique @db.VarChar
+  birthday  DateTime? @db.Timestamp(6)
+  gender    Int?
+  address   String?   @db.VarChar
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+
+  @@index([nikename])
+}
+
+model View {
+  id        Int       @id @default(autoincrement())
+  recordId  String    @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String    @db.Uuid
+  show      Int?
+  read      Int?
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? @db.Timestamp(6)
+}
