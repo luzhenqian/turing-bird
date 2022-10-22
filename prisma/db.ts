@@ -12,7 +12,12 @@ export const prisma =
 
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
+const noSoftDeleteTables = ["Session", "Account", "VerificationToken"];
+
 prisma.$use(async (params, next) => {
+  if (noSoftDeleteTables.includes(params.model || "")) {
+    return next(params);
+  }
   if (params.action === "findUnique" || params.action === "findFirst") {
     params.action = "findFirst";
     params.args.where["deletedAt"] = null;
@@ -30,23 +35,28 @@ prisma.$use(async (params, next) => {
 });
 
 prisma.$use(async (params, next) => {
-  if (params.model == "Post") {
-    if (params.action == "update") {
-      params.action = "updateMany";
+  if (noSoftDeleteTables.includes(params.model || "")) {
+    return next(params);
+  }
+  if (params.action == "update") {
+    params.action = "updateMany";
+    params.args.where["deletedAt"] = null;
+  }
+  if (params.action == "updateMany") {
+    if (params.args.where !== undefined) {
       params.args.where["deletedAt"] = null;
-    }
-    if (params.action == "updateMany") {
-      if (params.args.where !== undefined) {
-        params.args.where["deletedAt"] = null;
-      } else {
-        params.args["where"] = { deletedAt: null };
-      }
+    } else {
+      params.args["where"] = { deletedAt: null };
     }
   }
+
   return next(params);
 });
 
 prisma.$use(async (params, next) => {
+  if (noSoftDeleteTables.includes(params.model || "")) {
+    return next(params);
+  }
   if (params.action == "delete") {
     params.action = "update";
     params.args["data"] = { deletedAt: new Date() };
