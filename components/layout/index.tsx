@@ -20,8 +20,8 @@ type Props = {
 };
 
 export default function Layout({ children }: Props) {
-  const { data: session, status } = useSession();
-
+  const { data: session } = useSession();
+  
   return (
     <div className="flex flex-col items-center">
       <header className="max-w-[1200px] min-w-[900px] flex items-center justify-between p-2 gap-2">
